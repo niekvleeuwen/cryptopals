@@ -4,6 +4,7 @@
 
 import codecs
 
+
 # Letter frequency retrieved from https://en.wikipedia.org/wiki/Letter_frequency
 english_letter_frequency = {
     'a': 0.08167, 
@@ -34,48 +35,93 @@ english_letter_frequency = {
     'z': 0.00074,
 }
 
-def calc_english_score(input_bytes):
+
+def calculate_english_error(input: bytes) -> int:
+    """Calculate an error based on English letter frequency for the given input.
+       The lower the error is, the more the letter freqeuncy matches the English
+       letter frequency.
+    
+    Args:
+        input: input to calculate score for
+    
+    Returns:
+        int: error (the lower the better)
+    """
     # Create a dict with the alphabet
     letter_frequency = dict.fromkeys(english_letter_frequency.keys(), 0)
 
     # Count the frequency of each letter in the input string    
-    for i in input_bytes:
+    for i in input:
         c = chr(i)
         if c in english_letter_frequency:
             letter_frequency[c] += 1
     
     # Convert absolute count to percentage
     for key, item in letter_frequency.items():
-        letter_frequency[key] = item / len(input_bytes)
+        letter_frequency[key] = item / len(input)
     
     # Calculate the error of the string to the relative letter frequency in the English language
     error = 0
-    for i,j in zip(letter_frequency.values(),english_letter_frequency.values()):
-        error += abs(i-j)
+    for i,j in zip(letter_frequency.values(), english_letter_frequency.values()):
+        error += abs(i - j)
     return error
 
-def xor_str_with_key(input_bytes, key):
+
+def xor_with_key(buf: bytes, key: int) -> bytes:
+    """Produces the XOR combination for a buffer and a key
+    
+    Args:
+        buf: the buffer to apply the key to
+        key: the key to apply to the buffer
+    
+    Returns:
+        result of the buffer xor'd with the key
+    """
     # Loop trough each byte of the input
     result = []
-    for a in input_bytes:
+    for a in buf:
         # Use the XOR operator on the two bytes
         xor_byte = a ^ key
         # Store the resulting byte in an array
         result.append(xor_byte)
     return bytes(result)
 
-if __name__ == "__main__":
-    decoded_str = codecs.decode('1b37373331363f78151b7f2b783431333d78397828372d363c78373e783a393b3736', 'hex')
+
+def single_byte_xor(input: bytes) -> str:
+    """Brute force single-byte XOR encrypted bytes 
+    
+    Args:
+        bytes: encrypted bytes with single-byte XOR
+    
+    Returns:
+        str: best found result
+    """
     best_result = None
     lowest_error = 9999999999
 
     # Loop trough every key option (bytes must be in range 0-256)
     for i in range(256):
-        result = xor_str_with_key(decoded_str, i)
-        error = calc_english_score(result)
+        result = xor_with_key(input, i)
+        error = calculate_english_error(result)
         print(f'{i}: {result} (error {error})') 
 
+        # store the result with the lowest recorded error
         if error < lowest_error:
             lowest_error = error
             best_result = result
     print(f'Best result: {best_result} (score {lowest_error})') 
+    return best_result
+
+
+def test_single_byte_xor():
+    input = codecs.decode('1b37373331363f78151b7f2b783431333d78397828372d363c78373e783a393b3736', 'hex')
+    
+    result = single_byte_xor(input)
+    
+    # Verify the results
+    assert result == b"Cooking MC's like a pound of bacon"
+
+    print("Passed")
+
+if __name__ == "__main__":
+    test_single_byte_xor()
