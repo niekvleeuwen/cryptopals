@@ -11,6 +11,8 @@ def xor(buf1: bytes, buf2: bytes) -> bytes:
     Args:
         buf1: first buffer (should be the same size as buf2)
         buf2: second buffer (should be the same size as buf1)
+    Returns:
+        bytes: hex encoded result
     """
     # Loop trough each byte of both byte strings
     result = []
@@ -44,7 +46,7 @@ def test_xor():
     print('====================================')
     print(result.decode())
     
-    print("Passed")
+    print('Passed test')
 
 
 if __name__ == "__main__":

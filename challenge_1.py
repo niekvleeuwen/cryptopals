@@ -9,6 +9,8 @@ def convert_hex_to_b64(hex: str) -> str:
     
     Args:
         hex: a string encoded in hexadecimal
+    Returns:
+        str: base64 encoded string
     """
     # Decode the hexadecimal to bytes
     decoded_hex = codecs.decode(hex, 'hex')
@@ -21,11 +23,12 @@ def convert_hex_to_b64(hex: str) -> str:
 def test_convert_hex_to_b64():
     # The string to decode in hexadecimal
     input_hex = '49276d206b696c6c696e6720796f757220627261696e206c696b65206120706f69736f6e6f7573206d757368726f6f6d' 
+    
     result = convert_hex_to_b64(input_hex)
+    
     assert result == 'SSdtIGtpbGxpbmcgeW91ciBicmFpbiBsaWtlIGEgcG9pc29ub3VzIG11c2hyb29t'
-    print(f'{input_hex} = {result}')
-
-    print("Passed")
+    
+    print(f'Passed test. {input_hex} = {result}')
 
 
 if __name__ == "__main__":

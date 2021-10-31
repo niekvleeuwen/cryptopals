@@ -75,7 +75,7 @@ def xor_with_key(buf: bytes, key: int) -> bytes:
         key: the key to apply to the buffer
     
     Returns:
-        result of the buffer xor'd with the key
+        bytes: result of the buffer xor'd with the key
     """
     # Loop trough each byte of the input
     result = []
@@ -87,41 +87,42 @@ def xor_with_key(buf: bytes, key: int) -> bytes:
     return bytes(result)
 
 
-def single_byte_xor(input: bytes) -> str:
+def brute_force_single_byte_xor(input: bytes) -> tuple:
     """Brute force single-byte XOR encrypted bytes 
     
     Args:
         bytes: encrypted bytes with single-byte XOR
     
     Returns:
-        str: best found result
+        tuple: key and result of the result with the lowest error 
     """
     best_result = None
+    best_key = None
     lowest_error = 9999999999
 
     # Loop trough every key option (bytes must be in range 0-256)
-    for i in range(256):
-        result = xor_with_key(input, i)
+    for key in range(256):
+        result = xor_with_key(input, key)
         error = calculate_english_error(result)
-        print(f'{i}: {result} (error {error})') 
 
         # store the result with the lowest recorded error
         if error < lowest_error:
             lowest_error = error
             best_result = result
-    print(f'Best result: {best_result} (score {lowest_error})') 
-    return best_result
+            best_key = key
+    return best_key, best_result
 
 
-def test_single_byte_xor():
+def test_brute_force_single_byte_xor():
     input = codecs.decode('1b37373331363f78151b7f2b783431333d78397828372d363c78373e783a393b3736', 'hex')
     
-    result = single_byte_xor(input)
-    
+    key, result = brute_force_single_byte_xor(input)
+
     # Verify the results
+    assert key == 88
     assert result == b"Cooking MC's like a pound of bacon"
 
-    print("Passed")
+    print(f'Passed test. Result: {result} with key {key}') 
 
 if __name__ == "__main__":
-    test_single_byte_xor()
+    test_brute_force_single_byte_xor()

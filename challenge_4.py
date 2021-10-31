@@ -38,7 +38,7 @@ def test_detect_single_character_xor():
     # Verify the results
     assert result == b'Now that the party is jumping\n'
 
-    print("Passed")
+    print('Passed test')
 
 if __name__ == "__main__":
     test_detect_single_character_xor()
