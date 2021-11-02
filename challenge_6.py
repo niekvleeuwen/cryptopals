@@ -41,7 +41,8 @@ def break_repeating_key_xor(encrypted_content: bytes) -> tuple:
         fragments = [encrypted_content[i:i+keysize] for i in range(0, len(encrypted_content), keysize)]
 
         normalized_distances = []
-        for i in range(len(fragments)-1):
+        # Take 10 KEYSIZE blocks and average the distances
+        for i in range(10):
             # Calculate the hamming distance for the two fragments
             distance = hamming_distance(fragments[i], fragments[i+1])
             # Normalize the distance by dividing with the keysize
@@ -54,10 +55,10 @@ def break_repeating_key_xor(encrypted_content: bytes) -> tuple:
     # Move further with the keysize that has the lowest value
     min_key = min(normalized_edit_distances, key=normalized_edit_distances.get)
     
-    # Break the encrypted contents into blocks of KEYSIZE length
+    # Divide the contents in fragments of the keysize with the smallest edit distance
     fragments = [encrypted_content[i:i+min_key] for i in range(0, len(encrypted_content), min_key)]
 
-    # Transpose the fragements
+    # Transpose the fragments
     transposed_fragments = []
     for i in range(min_key):
         fragement = b''
